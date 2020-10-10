@@ -1,13 +1,14 @@
 package com.yanbin.githubbrowser.ui.main
 
-import androidx.lifecycle.ViewModelProviders
+import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yanbin.githubbrowser.R
@@ -29,7 +30,9 @@ class MainFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        val factory = GithubViewModelFactory(context!!)
+
+        viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
 
         viewModel.repoLiveData
             .observe(viewLifecycleOwner, Observer { repos ->
@@ -46,4 +49,14 @@ class MainFragment : Fragment() {
         recycler.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
     }
 
+}
+
+class GithubViewModelFactory(context: Context): ViewModelProvider.Factory {
+
+    private val database = GithubDatabase.getDatabase(context)
+
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        val githubRepoRepository = GithubRepoRepository(database.repoDao())
+        return MainViewModel(githubRepoRepository) as T
+    }
 }

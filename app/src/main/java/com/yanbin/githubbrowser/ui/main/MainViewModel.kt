@@ -2,15 +2,20 @@ package com.yanbin.githubbrowser.ui.main
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val githubRepoRepository: GithubRepoRepository) : ViewModel() {
 
-    private val repos = listOf(
-        Repo("Project1", "Kotlin"),
-        Repo("Project2", "Java"),
-        Repo("Project3", "C#"),
-        Repo("Project4", "Kotlin")
-    )
+    val repoLiveData = MutableLiveData<List<Repo>>()
 
-    val repoLiveData = MutableLiveData(repos)
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            githubRepoRepository.insertDefaultData()
+
+            val allRepos = githubRepoRepository.getAll()
+            repoLiveData.postValue(allRepos)
+        }
+    }
 }
