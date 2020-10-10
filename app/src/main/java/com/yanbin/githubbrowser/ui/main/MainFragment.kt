@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yanbin.githubbrowser.R
@@ -19,6 +20,7 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
+    private val adapter = RepoAdapter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -28,19 +30,16 @@ class MainFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
+
+        viewModel.repoLiveData
+            .observe(viewLifecycleOwner, Observer { repos ->
+                adapter.repos.addAll(repos)
+                adapter.notifyDataSetChanged()
+            })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = RepoAdapter()
-        val repos = listOf(
-            Repo("Project1", "Kotlin"),
-            Repo("Project2", "Java"),
-            Repo("Project3", "C#"),
-            Repo("Project4", "Kotlin")
-        )
-        adapter.repos.addAll(repos)
 
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
