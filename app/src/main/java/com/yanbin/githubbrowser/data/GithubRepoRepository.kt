@@ -5,7 +5,10 @@ import com.yanbin.githubbrowser.model.IssueStatus
 import com.yanbin.githubbrowser.model.Repo
 import java.time.LocalDate
 
-class GithubRepoRepository(private val repoDao: RepoDao) {
+class GithubRepoRepository(
+    private val repoDao: RepoDao,
+    private val issueDao: IssueDao
+) {
 
     suspend fun insertDefaultData() {
         repoDao.insert(RepoEntity(repoId = "123", title = "Project1", language = "Kotlin"))
@@ -26,10 +29,14 @@ class GithubRepoRepository(private val repoDao: RepoDao) {
     }
 
     suspend fun getIssues(repoId: String): List<Issue> {
-        return listOf(
-            Issue("issue1", LocalDate.of(2020, 10, 10), IssueStatus.CLOSED),
-            Issue("issue2", LocalDate.of(2020, 10, 20), IssueStatus.OPEN),
-            Issue("issue3", LocalDate.of(2020, 10, 21), IssueStatus.OPEN)
-        )
+        return issueDao.getByRepoId(repoId)
+            .map {
+                val date = LocalDate.parse(it.openDate)
+                val status = when(it.issueStatus) {
+                    IssueStatus.OPEN.toString() -> IssueStatus.OPEN
+                    else -> IssueStatus.CLOSED
+                }
+                Issue(it.title, date, status)
+            }
     }
 }

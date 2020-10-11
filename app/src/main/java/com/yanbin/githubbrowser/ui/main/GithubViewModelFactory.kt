@@ -13,7 +13,7 @@ class GithubViewModelFactory(context: Context): ViewModelProvider.Factory {
     var currentRepoId = ""
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val githubRepoRepository = GithubRepoRepository(database.repoDao())
+        val githubRepoRepository = GithubRepoRepository(database.repoDao(), database.issueDao())
         return when(modelClass) {
             RepoViewModel::class.java -> RepoViewModel(githubRepoRepository) as T
             IssuesViewModel::class.java -> IssuesViewModel(githubRepoRepository, currentRepoId) as T
