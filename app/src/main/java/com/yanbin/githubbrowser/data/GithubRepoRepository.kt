@@ -8,10 +8,10 @@ import java.time.LocalDate
 class GithubRepoRepository(private val repoDao: RepoDao) {
 
     suspend fun insertDefaultData() {
-        repoDao.insert(RepoEntity(title = "Project1", language = "Kotlin"))
-        repoDao.insert(RepoEntity(title = "Project2", language = "Java"))
-        repoDao.insert(RepoEntity(title = "Project3", language = "C#"))
-        repoDao.insert(RepoEntity(title = "Project4", language = "Kotlin"))
+        repoDao.insert(RepoEntity(repoId = "123", title = "Project1", language = "Kotlin"))
+        repoDao.insert(RepoEntity(repoId = "124", title = "Project2", language = "Java"))
+        repoDao.insert(RepoEntity(repoId = "125", title = "Project3", language = "C#"))
+        repoDao.insert(RepoEntity(repoId = "126", title = "Project4", language = "Kotlin"))
     }
 
     suspend fun getRepoCount(): Int {
@@ -20,7 +20,9 @@ class GithubRepoRepository(private val repoDao: RepoDao) {
 
     suspend fun getAll(): List<Repo> {
         return repoDao.getAll()
-            .map { Repo("123", it.title, it.language) }
+            .map { entity ->
+                Repo("123", entity.title, entity.language)
+            }
     }
 
     suspend fun getIssues(repoId: String): List<Issue> {
