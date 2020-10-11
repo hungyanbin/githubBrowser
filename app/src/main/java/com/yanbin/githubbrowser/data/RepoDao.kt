@@ -1,4 +1,4 @@
-package com.yanbin.githubbrowser.ui.main
+package com.yanbin.githubbrowser.data
 
 import androidx.room.Dao
 import androidx.room.Insert

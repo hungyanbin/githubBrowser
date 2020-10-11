@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yanbin.githubbrowser.R
+import com.yanbin.githubbrowser.data.GithubDatabase
+import com.yanbin.githubbrowser.data.GithubRepoRepository
 import kotlinx.android.synthetic.main.main_fragment.*
 
 class MainFragment : Fragment() {

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yanbin.githubbrowser.R
+import com.yanbin.githubbrowser.model.Repo
 
 class RepoAdapter: RecyclerView.Adapter<RepoViewHolder>() {
 

@@ -1,4 +1,6 @@
-package com.yanbin.githubbrowser.ui.main
+package com.yanbin.githubbrowser.data
+
+import com.yanbin.githubbrowser.model.Repo
 
 class GithubRepoRepository(private val repoDao: RepoDao) {
 
