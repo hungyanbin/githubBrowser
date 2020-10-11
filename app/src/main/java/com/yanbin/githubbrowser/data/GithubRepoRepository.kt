@@ -4,6 +4,7 @@ import com.yanbin.githubbrowser.model.Issue
 import com.yanbin.githubbrowser.model.IssueStatus
 import com.yanbin.githubbrowser.model.Repo
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class GithubRepoRepository(
     private val repoDao: RepoDao,
@@ -38,5 +39,15 @@ class GithubRepoRepository(
                 }
                 Issue(it.title, date, status)
             }
+    }
+
+    suspend fun addIssue(newIssue: Issue, repoId: String) {
+        val newIssueEntity = IssueEntity(
+            repoId = repoId,
+            title = newIssue.title,
+            openDate = newIssue.openedDate.format(DateTimeFormatter.ISO_DATE),
+            issueStatus = newIssue.status.toString()
+        )
+        issueDao.insert(newIssueEntity)
     }
 }

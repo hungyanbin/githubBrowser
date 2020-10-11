@@ -9,7 +9,7 @@ import androidx.room.Query
 interface IssueDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(repo: IssueEntity)
+    suspend fun insert(issue: IssueEntity)
 
     @Query("SELECT * from issue WHERE repoId = :repoId")
     suspend fun getByRepoId(repoId: String): List<IssueEntity>

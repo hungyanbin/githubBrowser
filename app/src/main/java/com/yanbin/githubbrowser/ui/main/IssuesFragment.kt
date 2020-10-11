@@ -44,6 +44,10 @@ class IssuesFragment: Fragment() {
                 adapter.issues.addAll(issues)
                 adapter.notifyDataSetChanged()
             })
+
+        btnAdd.setOnClickListener {
+            viewModel.addNewIssue()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
