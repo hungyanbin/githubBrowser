@@ -11,6 +11,7 @@ import com.yanbin.githubbrowser.model.Repo
 class RepoAdapter: RecyclerView.Adapter<RepoViewHolder>() {
 
     val repos = mutableListOf<Repo>()
+    var onItemClicked: (Repo) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepoViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_repos, parent, false)
@@ -24,6 +25,9 @@ class RepoAdapter: RecyclerView.Adapter<RepoViewHolder>() {
     override fun onBindViewHolder(holder: RepoViewHolder, position: Int) {
         val item = repos[position]
         holder.bind(item)
+        holder.itemView.setOnClickListener {
+            onItemClicked(item)
+        }
     }
 }
 

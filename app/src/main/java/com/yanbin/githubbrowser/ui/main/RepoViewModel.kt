@@ -8,9 +8,10 @@ import com.yanbin.githubbrowser.model.Repo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val githubRepoRepository: GithubRepoRepository) : ViewModel() {
+class RepoViewModel(private val githubRepoRepository: GithubRepoRepository) : ViewModel() {
 
     val repoLiveData = MutableLiveData<List<Repo>>()
+    val selectedRepo = MutableLiveData<String>()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -22,4 +23,5 @@ class MainViewModel(private val githubRepoRepository: GithubRepoRepository) : Vi
             repoLiveData.postValue(allRepos)
         }
     }
+
 }
