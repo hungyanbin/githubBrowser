@@ -1,5 +1,7 @@
 package com.yanbin.githubbrowser.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import com.yanbin.githubbrowser.model.Issue
 import com.yanbin.githubbrowser.model.IssueStatus
 import com.yanbin.githubbrowser.model.Repo
@@ -25,19 +27,21 @@ class GithubRepoRepository(
     suspend fun getAll(): List<Repo> {
         return repoDao.getAll()
             .map { entity ->
-                Repo("123", entity.title, entity.language)
+                Repo(entity.repoId, entity.title, entity.language)
             }
     }
 
-    suspend fun getIssues(repoId: String): List<Issue> {
+    fun getIssues(repoId: String): LiveData<List<Issue>> {
         return issueDao.getByRepoId(repoId)
-            .map {
-                val date = LocalDate.parse(it.openDate)
-                val status = when(it.issueStatus) {
-                    IssueStatus.OPEN.toString() -> IssueStatus.OPEN
-                    else -> IssueStatus.CLOSED
+            .map { issueEntities ->
+                issueEntities.map {
+                    val date = LocalDate.parse(it.openDate)
+                    val status = when(it.issueStatus) {
+                        IssueStatus.OPEN.toString() -> IssueStatus.OPEN
+                        else -> IssueStatus.CLOSED
+                    }
+                    Issue(it.title, date, status)
                 }
-                Issue(it.title, date, status)
             }
     }
 

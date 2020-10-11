@@ -37,10 +37,11 @@ class IssuesFragment: Fragment() {
         //TODO Not a good practice
         factory.currentRepoId = arguments!!.getString("repoId")!!
 
-        viewModel = ViewModelProvider(requireActivity(), factory).get(IssuesViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory).get(IssuesViewModel::class.java)
 
         viewModel.issuesLiveData
             .observe(viewLifecycleOwner, Observer { issues ->
+                adapter.issues.clear()
                 adapter.issues.addAll(issues)
                 adapter.notifyDataSetChanged()
             })
