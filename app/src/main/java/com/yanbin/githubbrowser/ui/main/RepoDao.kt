@@ -13,4 +13,7 @@ interface RepoDao {
 
     @Query("SELECT * from repo")
     suspend fun getAll(): List<RepoEntity>
+
+    @Query("SELECT count(_id) from repo")
+    suspend fun getRepoCount(): Int
 }

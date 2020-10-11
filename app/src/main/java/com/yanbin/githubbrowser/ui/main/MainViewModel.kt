@@ -12,7 +12,9 @@ class MainViewModel(private val githubRepoRepository: GithubRepoRepository) : Vi
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            githubRepoRepository.insertDefaultData()
+            if (githubRepoRepository.getRepoCount() == 0) {
+                githubRepoRepository.insertDefaultData()
+            }
 
             val allRepos = githubRepoRepository.getAll()
             repoLiveData.postValue(allRepos)

@@ -9,6 +9,10 @@ class GithubRepoRepository(private val repoDao: RepoDao) {
         repoDao.insert(RepoEntity(title = "Project4", language = "Kotlin"))
     }
 
+    suspend fun getRepoCount(): Int {
+        return repoDao.getRepoCount()
+    }
+
     suspend fun getAll(): List<Repo> {
         return repoDao.getAll()
             .map { Repo(it.title, it.language) }
