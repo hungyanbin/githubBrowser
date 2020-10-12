@@ -7,7 +7,9 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [RepoEntity::class, IssueEntity::class], version = 3)
+@Database(
+    entities = [RepoEntity::class, IssueEntity::class],
+    version = 3)
 abstract class GithubDatabase: RoomDatabase() {
 
     abstract fun repoDao(): RepoDao

@@ -24,11 +24,8 @@ class GithubRepoRepository(
         return repoDao.getRepoCount()
     }
 
-    suspend fun getAll(): List<Repo> {
-        return repoDao.getAll()
-            .map { entity ->
-                Repo(entity.repoId, entity.title, entity.language)
-            }
+    fun getAll(): LiveData<List<Repo>> {
+        return repoDao.getRepoWithIssueCount()
     }
 
     fun getIssues(repoId: String): LiveData<List<Issue>> {

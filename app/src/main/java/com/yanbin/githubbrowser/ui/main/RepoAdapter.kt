@@ -31,14 +31,16 @@ class RepoAdapter: RecyclerView.Adapter<RepoViewHolder>() {
     }
 }
 
-class RepoViewHolder(view: View): RecyclerView.ViewHolder(view) {
+class RepoViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
 
     private val textTitle = view.findViewById<TextView>(R.id.textTitle)
     private val textLanguage = view.findViewById<TextView>(R.id.textLanguage)
+    private val textIssueCount = view.findViewById<TextView>(R.id.textIssueCount)
 
     fun bind(item: Repo) {
         textTitle.text = item.title
         textLanguage.text = item.language
+        textIssueCount.text = view.context.getString(R.string.issues) + item.issueCount
     }
 
 }
