@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yanbin.githubbrowser.MainActivity
 import com.yanbin.githubbrowser.R
 import kotlinx.android.synthetic.main.issues_fragment.*
 
@@ -33,7 +34,7 @@ class IssuesFragment: Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = GithubViewModelFactory(context!!)
+        val factory = (activity as MainActivity).viewModelFactory
         //TODO Not a good practice
         factory.currentRepoId = arguments!!.getString("repoId")!!
 

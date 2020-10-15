@@ -12,6 +12,7 @@ import com.yanbin.githubbrowser.ui.main.RepoViewModel
 class MainActivity : AppCompatActivity() {
 
     private lateinit var repoViewModel: RepoViewModel
+    val viewModelFactory by lazy { GithubViewModelFactory(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,9 +24,8 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        val factory = GithubViewModelFactory(this)
 
-        repoViewModel = ViewModelProvider(this, factory).get(RepoViewModel::class.java)
+        repoViewModel = ViewModelProvider(this, viewModelFactory).get(RepoViewModel::class.java)
 
         repoViewModel.selectedRepo.observe(this, Observer { repoId ->
             val issueFragment = IssuesFragment.newInstance(repoId)

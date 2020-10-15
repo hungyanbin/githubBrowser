@@ -36,7 +36,9 @@ class ApiService {
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
+
     }
 
     val githubApi = retrofit.create(GithubApi::class.java)
+    val githubGraphQlApi = retrofit.create(GithubGraphQlApi::class.java)
 }
