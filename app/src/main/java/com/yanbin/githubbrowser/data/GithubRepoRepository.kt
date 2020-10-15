@@ -11,24 +11,24 @@ import java.time.format.DateTimeFormatter
 class GithubRepoRepository(
     private val repoDao: RepoDao,
     private val issueDao: IssueDao
-) {
+) : IGithubRepoRepository {
 
-    suspend fun insertDefaultData() {
+    override suspend fun insertDefaultData() {
         repoDao.insert(RepoEntity(repoId = "123", title = "Project1", language = "Kotlin"))
         repoDao.insert(RepoEntity(repoId = "124", title = "Project2", language = "Java"))
         repoDao.insert(RepoEntity(repoId = "125", title = "Project3", language = "C#"))
         repoDao.insert(RepoEntity(repoId = "126", title = "Project4", language = "Kotlin"))
     }
 
-    suspend fun getRepoCount(): Int {
+    override suspend fun getRepoCount(): Int {
         return repoDao.getRepoCount()
     }
 
-    fun getAll(): LiveData<List<Repo>> {
+    override fun getAll(): LiveData<List<Repo>> {
         return repoDao.getRepoWithIssueCount()
     }
 
-    fun getIssues(repoId: String): LiveData<List<Issue>> {
+    override fun getIssues(repoId: String): LiveData<List<Issue>> {
         return issueDao.getByRepoId(repoId)
             .map { issueEntities ->
                 issueEntities.map {
@@ -42,7 +42,7 @@ class GithubRepoRepository(
             }
     }
 
-    suspend fun addIssue(newIssue: Issue, repoId: String) {
+    override suspend fun addIssue(newIssue: Issue, repoId: String) {
         val newIssueEntity = IssueEntity(
             repoId = repoId,
             title = newIssue.title,
