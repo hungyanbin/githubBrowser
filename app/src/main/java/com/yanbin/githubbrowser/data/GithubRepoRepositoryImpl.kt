@@ -1,5 +1,6 @@
 package com.yanbin.githubbrowser.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.yanbin.githubbrowser.model.Issue
@@ -47,25 +48,29 @@ class GithubRepoRepositoryImpl(
 
     init {
         GlobalScope.launch(Dispatchers.IO) {
-            val response = ApiService.getInstance().githubGraphQlApi
-                .query(token, GraphQlRequest(queryString))
+            try {
+                val response = ApiService.getInstance().githubGraphQlApi
+                    .query(token, GraphQlRequest(queryString))
 
-            val repositories = response.data.viewer.repositories.nodes
-            val repoEntities = repositories.map {
-                val languages = it.languages.nodes
-                val language = if (languages.isNotEmpty()) {
-                    languages.first().name
-                } else {
-                    ""
+                val repositories = response.data.viewer.repositories.nodes
+                val repoEntities = repositories.map {
+                    val languages = it.languages.nodes
+                    val language = if (languages.isNotEmpty()) {
+                        languages.first().name
+                    } else {
+                        ""
+                    }
+                    RepoEntity(null, it.id, it.name, language)
                 }
-                RepoEntity(null, it.id, it.name, language)
-            }
-            val issueEntities = repositories.flatMap { repo ->
-                issueResponsesToIssueEntity(repo.issues, repo.id)
-            }
+                val issueEntities = repositories.flatMap { repo ->
+                    issueResponsesToIssueEntity(repo.issues, repo.id)
+                }
 
-            repoDao.updateData(repoEntities)
-            issueDao.insertAll(issueEntities)
+                repoDao.updateData(repoEntities)
+                issueDao.insertAll(issueEntities)
+            } catch (e: Exception) {
+                Log.e("Github", "error ", e)
+            }
         }
     }
 
