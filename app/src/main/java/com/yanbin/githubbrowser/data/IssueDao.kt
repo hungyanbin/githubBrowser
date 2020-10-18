@@ -12,6 +12,9 @@ interface IssueDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(issue: IssueEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(repos: List<IssueEntity>)
+
     @Query("SELECT * from issue WHERE repoId = :repoId")
     fun getByRepoId(repoId: String): LiveData<List<IssueEntity>>
 

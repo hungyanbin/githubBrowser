@@ -4,13 +4,12 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.yanbin.githubbrowser.data.GithubDatabase
-import com.yanbin.githubbrowser.data.GraphQLGithubRepoRepository
-import com.yanbin.githubbrowser.data.RestfulGithubRepoRepository
+import com.yanbin.githubbrowser.data.GithubRepoRepositoryImpl
 
 class GithubViewModelFactory(context: Context): ViewModelProvider.Factory {
 
     private val database = GithubDatabase.getDatabase(context)
-    private val githubRepoRepository = GraphQLGithubRepoRepository()
+    private val githubRepoRepository = GithubRepoRepositoryImpl(database)
 
     var currentRepoId = ""
 

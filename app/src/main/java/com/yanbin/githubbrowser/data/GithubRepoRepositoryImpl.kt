@@ -1,8 +1,7 @@
 package com.yanbin.githubbrowser.data
 
-import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import com.yanbin.githubbrowser.model.Issue
 import com.yanbin.githubbrowser.model.IssueStatus
 import com.yanbin.githubbrowser.model.Repo
@@ -37,11 +36,14 @@ const val queryString = "{\n" +
     "  }\n" +
     "}\n"
 
-class GraphQLGithubRepoRepository : IGithubRepoRepository {
+class GithubRepoRepositoryImpl(
+    private val githubDatabase: GithubDatabase
+) : IGithubRepoRepository {
 
-    private val repoLiveData = MutableLiveData<List<Repo>>()
-    private val issuesLiveData = MutableLiveData<List<Issue>>()
-    private val cacheRepositories: MutableList<Node> = mutableListOf()
+    private val repoDao = githubDatabase.repoDao()
+    private val issueDao = githubDatabase.issueDao()
+
+    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
 
     init {
         GlobalScope.launch(Dispatchers.IO) {
@@ -49,19 +51,21 @@ class GraphQLGithubRepoRepository : IGithubRepoRepository {
                 .query(token, GraphQlRequest(queryString))
 
             val repositories = response.data.viewer.repositories.nodes
-            val repos = repositories.map {
+            val repoEntities = repositories.map {
                 val languages = it.languages.nodes
                 val language = if (languages.isNotEmpty()) {
                     languages.first().name
                 } else {
                     ""
                 }
-                Repo(it.id, it.name, language, it.issues.nodes.size)
+                RepoEntity(null, it.id, it.name, language)
             }
-            cacheRepositories.clear()
-            cacheRepositories.addAll(repositories)
+            val issueEntities = repositories.flatMap { repo ->
+                issueResponsesToIssueEntity(repo.issues, repo.id)
+            }
 
-            repoLiveData.postValue(repos)
+            repoDao.updateData(repoEntities)
+            issueDao.insertAll(issueEntities)
         }
     }
 
@@ -74,23 +78,26 @@ class GraphQLGithubRepoRepository : IGithubRepoRepository {
     }
 
     override fun getAll(): LiveData<List<Repo>> {
-        return repoLiveData
+        return repoDao.getRepoWithIssueCount()
     }
 
     override fun getIssues(repoId: String): LiveData<List<Issue>> {
-        val repo = cacheRepositories.find { it.id == repoId }
-        if (repo != null) {
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
-            val issues = repo.issues.nodes.map {
-                val status = when (it.state) {
-                    "open" -> IssueStatus.OPEN
-                    else -> IssueStatus.CLOSED
+        return issueDao.getByRepoId(repoId)
+            .map { entities ->
+                entities.map { entity ->
+                    val status = when (entity.issueStatus) {
+                        "open" -> IssueStatus.OPEN
+                        else -> IssueStatus.CLOSED
+                    }
+                    Issue(entity.title, LocalDateTime.parse(entity.openDate, formatter).toLocalDate(), status)
                 }
-                Issue(it.title, LocalDateTime.parse(it.createdAt, formatter).toLocalDate(), status)
             }
-            issuesLiveData.postValue(issues)
+    }
+
+    private fun issueResponsesToIssueEntity(issues: Issues, repoId: String): List<IssueEntity> {
+        return issues.nodes.map {
+            IssueEntity(null, repoId, it.title, it.createdAt, it.state)
         }
-        return issuesLiveData
     }
 
     override suspend fun addIssue(newIssue: Issue, repoId: String) {

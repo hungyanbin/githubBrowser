@@ -1,10 +1,11 @@
 package com.yanbin.githubbrowser.data
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 
-@Entity(tableName = "repo")
+@Entity(
+    tableName = "repo",
+    indices = [Index(value = ["repoId"], unique = true)]
+)
 data class RepoEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "_id") val id: Int? = null,
     val repoId: String,
