@@ -38,7 +38,8 @@ const val queryString = "{\n" +
     "}\n"
 
 class GithubRepoRepositoryImpl(
-    private val githubDatabase: GithubDatabase
+    private val githubDatabase: GithubDatabase,
+    private val apiService: ApiService
 ) : IGithubRepoRepository {
 
     private val repoDao = githubDatabase.repoDao()
@@ -49,7 +50,7 @@ class GithubRepoRepositoryImpl(
     init {
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                val response = ApiService.getInstance().githubGraphQlApi
+                val response = apiService.githubGraphQlApi
                     .query(token, GraphQlRequest(queryString))
 
                 val repositories = response.data.viewer.repositories.nodes

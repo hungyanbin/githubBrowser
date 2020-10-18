@@ -6,12 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yanbin.githubbrowser.MainActivity
 import com.yanbin.githubbrowser.R
 import kotlinx.android.synthetic.main.repo_fragment.*
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class MainFragment : Fragment() {
 
@@ -19,7 +18,7 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: RepoViewModel
+    private val viewModel by sharedViewModel<RepoViewModel>()
     private val adapter = RepoAdapter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -29,9 +28,6 @@ class MainFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = (activity as MainActivity).viewModelFactory
-
-        viewModel = ViewModelProvider(requireActivity(), factory).get(RepoViewModel::class.java)
 
         viewModel.repoLiveData
             .observe(viewLifecycleOwner, Observer { repos ->

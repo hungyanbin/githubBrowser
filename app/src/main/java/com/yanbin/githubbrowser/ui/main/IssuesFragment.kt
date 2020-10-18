@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yanbin.githubbrowser.MainActivity
 import com.yanbin.githubbrowser.R
 import kotlinx.android.synthetic.main.issues_fragment.*
+import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class IssuesFragment: Fragment() {
 
@@ -25,7 +25,9 @@ class IssuesFragment: Fragment() {
         }
     }
 
-    private lateinit var viewModel: IssuesViewModel
+    private val viewModel by viewModel<IssuesViewModel> {
+        parametersOf(arguments!!.getString("repoId")!!)
+    }
     private val adapter = IssueAdapter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,12 +36,6 @@ class IssuesFragment: Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = (activity as MainActivity).viewModelFactory
-        //TODO Not a good practice
-        factory.currentRepoId = arguments!!.getString("repoId")!!
-
-        viewModel = ViewModelProvider(this, factory).get(IssuesViewModel::class.java)
-
         viewModel.issuesLiveData
             .observe(viewLifecycleOwner, Observer { issues ->
                 adapter.issues.clear()
